@@ -1,0 +1,8 @@
+{
+  "alias": "@",
+  "analytics": true,
+  "hasSrc": false,
+  "packages": [],
+  "preferredPackageManager": "pnpm",
+  "rootPath": ""
+}
