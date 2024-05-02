@@ -185,9 +185,9 @@ async function promptUserForSchema(config: Config, resourceType: TResource[]) {
   const includeTimestamps = await askForTimestamps();
   let belongsToUser: boolean = false;
   //@ts-ignore
-  if (resourceType.includes("model") && config?.auth !== null) {
-    belongsToUser = await askIfBelongsToUser();
-  }
+  // if (resourceType.includes("model") && config?.auth !== null) {
+  //   belongsToUser = await askIfBelongsToUser();
+  // }
   return {
     tableName,
     fields,

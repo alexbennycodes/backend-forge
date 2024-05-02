@@ -11,7 +11,7 @@ export const paths: { normal: Paths } = {
     },
     shared: {
       orm: {
-        servicesDir: "api",
+        servicesDir: "services",
         schemaDir: "db/schema",
       },
 
@@ -59,10 +59,7 @@ export const generateServiceFileNames = (newModel: string) => {
   const { shared } = getFilePaths();
   const { rootPath } = readConfigFile();
   const rootDir = rootPath.concat(shared.orm.servicesDir);
-  return {
-    queriesPath: `${rootDir}/${newModel}/queries.ts`,
-    mutationsPath: `${rootDir}/${newModel}/mutations.ts`,
-  };
+  return `${rootDir}/${newModel}.service.ts`;
 };
 
 export const getDbIndexPath = (ormToBeInstalled?: ORMType) => {

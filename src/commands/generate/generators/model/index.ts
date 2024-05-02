@@ -8,10 +8,9 @@ import {
   getFilePaths,
 } from "../../../filePaths/index.js";
 import { ExtendedSchema } from "../../types.js";
-import { toCamelCase } from "../../utils.js";
-import { generateMutationContent } from "./mutations/index.js";
-import { generateQueryContent } from "./queries/index.js";
+import { snakeToKebab, toCamelCase } from "../../utils.js";
 import { generateModelContent } from "./schema/index.js";
+import { generateServicesContent } from "./services/index.js";
 
 export async function scaffoldModel(
   schema: ExtendedSchema,
@@ -21,7 +20,7 @@ export async function scaffoldModel(
   const { tableName } = schema;
   const { orm, preferredPackageManager, driver } = readConfigFile();
   const { shared, drizzle } = getFilePaths();
-  const serviceFileNames = generateServiceFileNames(toCamelCase(tableName));
+  const serviceFileName = generateServiceFileNames(snakeToKebab(tableName));
 
   const modelPath = `${formatFilePath(shared.orm.schemaDir, {
     prefix: "rootPath",
@@ -34,14 +33,8 @@ export async function scaffoldModel(
     await prismaGenerate(preferredPackageManager);
   }
 
-  // create queryFile
-  createFile(serviceFileNames.queriesPath, generateQueryContent(schema, orm));
-
-  // create mutationFile
-  createFile(
-    serviceFileNames.mutationsPath,
-    generateMutationContent(schema, driver, orm)
-  );
+  // create services file
+  createFile(serviceFileName, generateServicesContent(schema, driver, orm));
 
   consola.success("Successfully added model to your database!");
 }

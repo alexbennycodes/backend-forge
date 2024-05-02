@@ -2,14 +2,14 @@ import { DBType } from "../../../types.js";
 import { createFile, readConfigFile } from "../../../utils.js";
 import { formatFilePath, getFilePaths } from "../../filePaths/index.js";
 import { Schema } from "../types.js";
-import { formatTableName, toCamelCase } from "../utils.js";
+import { formatTableName, snakeToKebab, toCamelCase } from "../utils.js";
 
 export const scaffoldAPIRoute = (schema: Schema) => {
   const { hasSrc, driver } = readConfigFile();
   const { tableName } = schema;
-  const path = `${hasSrc ? "src/" : ""}app/api/${toCamelCase(
+  const path = `${hasSrc ? "src/" : ""}routes/${snakeToKebab(
     tableName
-  )}/route.ts`;
+  )}.route.ts`;
   createFile(path, generateRouteContent(schema, driver));
 };
 
@@ -19,21 +19,23 @@ const generateRouteContent = (schema: Schema, driver: DBType) => {
     tableNameSingularCapitalised,
     tableNameSingular,
     tableNameCamelCase,
+    tableNameKebabCase,
   } = formatTableName(tableName);
   const { shared } = getFilePaths();
 
-  const template = `import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
+  const template = `import express from "express";
 
 import {
   create${tableNameSingularCapitalised},
   delete${tableNameSingularCapitalised},
   update${tableNameSingularCapitalised},
+  get${tableNameSingularCapitalised}s,
+  get${tableNameSingularCapitalised}ById,
 } from "${formatFilePath(shared.orm.servicesDir, {
     prefix: "alias",
     removeExtension: false,
-  })}/${tableNameCamelCase}/mutations";
+  })}/${tableNameKebabCase}.service";
+
 import { 
   ${tableNameSingular}IdSchema,
   insert${tableNameSingularCapitalised}Params,
@@ -43,62 +45,19 @@ import {
     removeExtension: false,
   })}/${tableNameCamelCase}";
 
-export async function POST(req: Request) {
-  try {
-    const validatedData = insert${tableNameSingularCapitalised}Params.parse(await req.json());
-    const { tableNameSingular } = await create${tableNameSingularCapitalised}(validatedData);
+const ${tableNameCamelCase}Router = express.Router();
 
-    revalidatePath("/${tableNameCamelCase}"); // optional - assumes you will have named route same as entity
+${tableNameCamelCase}Router
+  .route("/")
+  .post(validator(Create${tableNameSingularCapitalised}Schema), create${tableNameSingularCapitalised})
+  .get(get${tableNameSingularCapitalised}s);
 
-    return NextResponse.json(tableNameSingular, { status: 201 });
+${tableNameCamelCase}Router
+  .route("/:${tableNameSingular}Id")
+  .get(validator(Read${tableNameSingularCapitalised}Schema), get${tableNameSingularCapitalised}ById));
+  .put(validator(Update${tableNameSingularCapitalised}Schema), update${tableNameSingularCapitalised})
+  .delete(validator(Delete${tableNameSingularCapitalised}Schema), delete${tableNameSingularCapitalised});
 
-  } catch (err) {
-    if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: err.issues }, { status: 400 });
-    } else {
-      return NextResponse.json({ error: err }, { status: 500 });
-    }
-  }
-}
-
-
-export async function PUT(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-
-    const validatedData = update${tableNameSingularCapitalised}Params.parse(await req.json());
-    const validatedParams = ${tableNameSingular}IdSchema.parse({ id });
-
-    const {  tableNameSingular } = await update${tableNameSingularCapitalised}(validatedParams.id, validatedData);
-
-    return NextResponse.json(tableNameSingular, { status: 200 });
-  } catch (err) {
-    if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: err.issues }, { status: 400 });
-    } else {
-      return NextResponse.json(err, { status: 500 });
-    }
-  }
-}
-
-export async function DELETE(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-
-    const validatedParams = ${tableNameSingular}IdSchema.parse({ id });
-    const { tableNameSingular } = await delete${tableNameSingularCapitalised}(validatedParams.id);
-
-    return NextResponse.json(tableNameSingular, { status: 200 });
-  } catch (err) {
-    if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: err.issues }, { status: 400 });
-    } else {
-      return NextResponse.json(err, { status: 500 });
-    }
-  }
-}
 `;
   return template;
 };

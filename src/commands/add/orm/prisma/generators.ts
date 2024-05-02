@@ -26,6 +26,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+model User {
+  id    Int     @id
+  email String  @unique
+  name  String?
+}
+
+
 `;
 };
 
