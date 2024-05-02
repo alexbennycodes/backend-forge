@@ -50,7 +50,7 @@ if (process.env.NODE_ENV !== "production") global.db = db;
 
 export const generatePrismaComputerModel = () => {
   const { alias } = readConfigFile();
-  return `import { computerSchema } from "${alias}/zodAutoGenSchemas";
+  return `import { computerSchema } from "${alias}/zodSchemas";
 import { z } from "zod";
 
 export const insertComputerSchema = computerSchema;

@@ -51,7 +51,7 @@ export async function updateTsConfigPrismaTypeAlias() {
   const tsConfig = JSON.parse(stripJsonComments(data));
 
   // Modify the target property
-  tsConfig.compilerOptions.paths[`${alias}/zodAutoGenSchemas`] = [
+  tsConfig.compilerOptions.paths[`${alias}/zodSchemas`] = [
     "./prisma/zod/index",
   ];
 

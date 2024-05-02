@@ -5,22 +5,22 @@ import { Paths } from "./types.js";
 export const paths: { normal: Paths } = {
   normal: {
     drizzle: {
-      dbMigrate: "lib/db/migrate.ts",
-      dbIndex: "lib/db/index.ts",
-      migrationsDir: "lib/db/migrations",
+      dbMigrate: "db/migrate.ts",
+      dbIndex: "db/index.ts",
+      migrationsDir: "db/migrations",
     },
     shared: {
       orm: {
-        servicesDir: "src/lib/api",
-        schemaDir: "src/lib/db/schema",
+        servicesDir: "api",
+        schemaDir: "db/schema",
       },
 
       init: {
-        envMjs: "lib/env.mjs",
-        libUtils: "lib/utils.ts",
+        envMjs: "env.mjs",
+        libUtils: "utils.ts",
       },
     },
-    prisma: { dbIndex: "lib/db/index.ts" },
+    prisma: { dbIndex: "db/index.ts" },
   },
 };
 export const getFilePaths = () => {

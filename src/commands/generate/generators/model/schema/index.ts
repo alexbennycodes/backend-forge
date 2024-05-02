@@ -97,7 +97,7 @@ import { nanoid${
 `;
   }
   if (orm === "prisma")
-    return `import { ${tableNameSingular}Schema } from "${alias}/zodAutoGenSchemas";
+    return `import { ${tableNameSingular}Schema } from "${alias}/zodSchemas";
 import { z } from "zod";${
       schema.includeTimestamps
         ? `\nimport { timestamps } from "${formatFilePath("lib/utils", {

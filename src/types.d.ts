@@ -49,11 +49,13 @@ export type DBField<T extends ColumnType = ColumnType> = {
 export type AvailablePackage = "drizzle" | "prisma";
 export type PackageType = "orm";
 export type ORMType = "drizzle" | "prisma";
+export type AuthType = "passport" | false;
 
 export type Config = {
   alias: string;
   analytics: boolean;
   driver: DBType | undefined;
+  auth: AuthType;
   hasSrc: boolean;
   orm: ORMType | undefined;
   packages: AvailablePackage[];

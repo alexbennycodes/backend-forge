@@ -5,6 +5,21 @@ import { AvailablePackage, Config, PMType, UpdateConfig } from "./types.js";
 import { execa } from "execa";
 import { spinner } from "./commands/add/index.js";
 
+export function isCurrentDirectoryEmpty() {
+  try {
+    const files = fs.readdirSync(".");
+    if (files.length !== 0) {
+      consola.fatal(
+        "Current directory is not empty. Create a new empty directory and try again"
+      );
+      process.exit(0);
+    }
+  } catch (err) {
+    consola.fatal("Something went wrong");
+    process.exit(0);
+  }
+}
+
 export const delay = (ms = 2000) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -102,6 +117,10 @@ export async function installPackages(
     console.error(`An error occurred: ${error.message}`);
   }
 }
+
+export const createPackageJSONFile = (options: any) => {
+  createFile("./package.json", JSON.stringify(options, null, 2));
+};
 
 export const createTSConfigFile = (options: any) => {
   createFile("./tsconfig.json", JSON.stringify(options, null, 2));
@@ -204,4 +223,58 @@ export const sendEvent = async (
     // console.error(e);
     return;
   }
+};
+
+export const createEntryPoint = () => {
+  createFile(
+    "src/index.ts",
+    `import cors from "cors";
+import express from "express";
+import errorHandler from "./middlewares/error";
+import notFoundHandler from "./middlewares/not-found";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+
+app.use("*", notFoundHandler);
+app.use("*", errorHandler);
+
+// start the server
+const port = process.env.PORT || 1338;
+
+app.listen(port, () => {
+  console.log("Start listening on port " + port);
+});`
+  );
+
+  createFile(
+    "src/middlewares/error.ts",
+    `import { NextFunction, Request, Response } from "express";
+
+async function errorHandler(
+  error: Error,
+  _: Request,
+  res: Response,
+  next: NextFunction
+) {
+  console.error(error);
+  res.send("Something went wrong");
+}
+
+export default errorHandler;`
+  );
+
+  createFile(
+    "src/middlewares/not-found.ts",
+    `import { Request, Response } from "express";
+
+async function notFoundHandler(_: Request, res: Response) {
+  res.status(404).send("This router does not exist");
+}
+
+export default notFoundHandler;`
+  );
 };
