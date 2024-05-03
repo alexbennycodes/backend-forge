@@ -16,14 +16,6 @@ export type DBProviderOptions = {
 };
 export type PMType = "npm" | "yarn" | "pnpm" | "bun";
 
-// export type FieldType =
-//   | "id"
-//   | "string"
-//   | "text"
-//   | "number"
-//   | "references"
-//   | "boolean";
-
 export type DrizzleColumnType = pgColumnType;
 
 export type ColumnType = DrizzleColumnType | PrismaColumnType;
@@ -32,19 +24,9 @@ export type DBField<T extends ColumnType = ColumnType> = {
   name: string;
   type: T;
   references?: string;
-  notNull?: boolean; // change to required later
+  notNull?: boolean;
   cascade?: boolean;
 };
-
-// export type DBField = {
-//   name: string;
-//   type: DrizzleColumnType;
-//   references?: string;
-//   notNull?: boolean; // change to required later
-//   cascade?: boolean;
-// };
-
-// extend type or do a base type with prisma field and drizzle field
 
 export type AvailablePackage = "drizzle" | "prisma";
 export type PackageType = "orm";

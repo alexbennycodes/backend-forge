@@ -45,6 +45,8 @@ import {
     removeExtension: false,
   })}/${tableNameCamelCase}";
 
+import validator from "@/middlewares/validator"
+
 const ${tableNameCamelCase}Router = express.Router();
 
 ${tableNameCamelCase}Router
@@ -54,10 +56,11 @@ ${tableNameCamelCase}Router
 
 ${tableNameCamelCase}Router
   .route("/:${tableNameSingular}Id")
-  .get(validator(Read${tableNameSingularCapitalised}Schema), get${tableNameSingularCapitalised}ById));
+  .get(validator(Read${tableNameSingularCapitalised}Schema), get${tableNameSingularCapitalised}ById)
   .put(validator(Update${tableNameSingularCapitalised}Schema), update${tableNameSingularCapitalised})
   .delete(validator(Delete${tableNameSingularCapitalised}Schema), delete${tableNameSingularCapitalised});
 
+export default ${tableNameCamelCase}Router;
 `;
   return template;
 };

@@ -405,3 +405,38 @@ ${createNotesList([
   "If you run into any issues, please create an issue on GitHub\n  (https://github.com/alexbennycodes/backend-forge/issues)",
 ])}`);
 };
+
+export const updateEntryFile = (routerName: string, fileName: string) => {
+  fs.readFile("src/index.ts", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    // Find the position to add the import statement
+    const lastImportIndex = data.lastIndexOf("import");
+
+    console.log(lastImportIndex);
+
+    // Modify the content to add the import statement
+    const newData =
+      data.slice(0, lastImportIndex) +
+      `import ${routerName}Router from "./routes/${fileName}.route";\n` +
+      data.slice(lastImportIndex);
+
+    // Find the position to add the line at the end
+
+    // Modify the content to add the line at the end
+    const finalData =
+      newData + `\napp.use("/api/v1/${fileName}", ${routerName}Router);`;
+
+    // Write the modified content back to the file
+    fs.writeFile("src/index.ts", finalData, "utf8", (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log("File has been modified successfully.");
+    });
+  });
+};

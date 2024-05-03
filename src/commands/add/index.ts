@@ -1,16 +1,15 @@
 import { confirm } from "@inquirer/prompts";
 import { consola } from "consola";
 import { InitOptions, ORMType } from "../../types.js";
-import { readConfigFile, sendEvent, updateConfigFile } from "../../utils.js";
-import { getFilePaths } from "../filePaths/index.js";
+import { readConfigFile, updateConfigFile } from "../../utils.js";
 import { initProject } from "../init/index.js";
 import { addDrizzle } from "./orm/drizzle/index.js";
 import { addPrisma } from "./orm/prisma/index.js";
 
 import ora from "ora";
+import { checkForExistingPackages } from "../init/utils.js";
 import { askDbProvider, askDbType, askOrm } from "./prompts.js";
 import { installPackagesFromList, printNextSteps } from "./utils.js";
-import { checkForExistingPackages } from "../init/utils.js";
 
 const promptUser = async (options?: InitOptions): Promise<InitOptions> => {
   const config = readConfigFile();

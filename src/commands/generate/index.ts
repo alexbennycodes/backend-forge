@@ -9,11 +9,7 @@ import {
   ORMType,
   PrismaColumnType,
 } from "../../types.js";
-import {
-  readConfigFile,
-  sendEvent,
-  updateConfigFileAfterUpdate,
-} from "../../utils.js";
+import { readConfigFile, updateConfigFileAfterUpdate } from "../../utils.js";
 import { addPackage } from "../add/index.js";
 import { initProject } from "../init/index.js";
 import { scaffoldAPIRoute } from "./generators/apiRoute.js";
@@ -26,6 +22,7 @@ import {
   getCurrentSchemas,
   printGenerateNextSteps,
   toCamelCase,
+  updateEntryFile,
 } from "./utils.js";
 
 type Choice<Value> = {
@@ -184,10 +181,9 @@ async function promptUserForSchema(config: Config, resourceType: TResource[]) {
   const fields = await askForFields(config.orm, config.driver, tableName);
   const includeTimestamps = await askForTimestamps();
   let belongsToUser: boolean = false;
-  //@ts-ignore
-  // if (resourceType.includes("model") && config?.auth !== null) {
-  //   belongsToUser = await askIfBelongsToUser();
-  // }
+  if (resourceType.includes("model") && config?.auth !== null) {
+    belongsToUser = await askIfBelongsToUser();
+  }
   return {
     tableName,
     fields,
@@ -222,7 +218,6 @@ async function getSchema(
   resourceType: TResource[]
 ): Promise<Schema> {
   const baseSchema = await promptUserForSchema(config, resourceType);
-  await addChildSchemaToParent(config, resourceType, baseSchema);
   return await addChildSchemaToParent(config, resourceType, baseSchema);
 }
 
@@ -304,13 +299,15 @@ async function generateResources(
   resourceType: TResource[]
 ) {
   const config = readConfigFile();
-  const { tableNameNormalEnglishCapitalised: tnEnglish } = formatTableName(
-    schema.tableName
-  );
+  const {
+    tableNameNormalEnglishCapitalised: tnEnglish,
+    tableNameCamelCase,
+    tableNameKebabCase,
+  } = formatTableName(schema.tableName);
 
-  if (resourceType.includes("model"))
-    scaffoldModel(schema, config.driver, config.hasSrc);
-  if (resourceType.includes("api_route")) scaffoldAPIRoute(schema);
+  scaffoldModel(schema, config.driver, config.hasSrc);
+  scaffoldAPIRoute(schema);
+  updateEntryFile(tableNameCamelCase, tableNameKebabCase);
 }
 
 export async function buildSchema() {

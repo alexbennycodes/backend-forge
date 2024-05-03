@@ -1,21 +1,18 @@
 import { select } from "@inquirer/prompts";
+import chalk from "chalk";
+import figlet from "figlet";
+import { existsSync, readFileSync } from "fs";
+import { AuthType, InitOptions, PMType } from "../../types.js";
 import {
   createConfigFile,
   createEntryPoint,
   createPackageJSONFile,
   createTSConfigFile,
   isCurrentDirectoryEmpty,
-  sendEvent,
 } from "../../utils.js";
-import { AuthType, Config, InitOptions, PMType } from "../../types.js";
-import { consola } from "consola";
 import { addPackage } from "../add/index.js";
-import { existsSync, readFileSync } from "fs";
-import path from "path";
-import { checkForPackageManager } from "./utils.js";
-import figlet from "figlet";
-import chalk from "chalk";
 import { addToInstallList } from "../add/utils.js";
+import { checkForPackageManager } from "./utils.js";
 
 export async function initProject(options?: InitOptions) {
   isCurrentDirectoryEmpty();
@@ -58,6 +55,8 @@ export async function initProject(options?: InitOptions) {
         module: "commonjs",
         esModuleInterop: true,
         forceConsistentCasingInFileNames: true,
+        rootDir: "./src",
+        outDir: "./dist",
         strict: true,
         skipLibCheck: true,
         paths: {
@@ -85,7 +84,13 @@ export async function initProject(options?: InitOptions) {
   createEntryPoint();
 
   addToInstallList({
-    regular: ["cors", "express", "express-async-handler", "express-validator"],
+    regular: [
+      "cors",
+      "express",
+      "express-async-handler",
+      "express-validator",
+      "http-status-codes",
+    ],
     dev: [
       "rimraf",
       "typescript",

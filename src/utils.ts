@@ -1,9 +1,8 @@
-import fs, { existsSync } from "fs";
-import path from "path";
 import { consola } from "consola";
-import { AvailablePackage, Config, PMType, UpdateConfig } from "./types.js";
 import { execa } from "execa";
-import { spinner } from "./commands/add/index.js";
+import fs from "fs";
+import path from "path";
+import { AvailablePackage, Config, PMType, UpdateConfig } from "./types.js";
 
 export function isCurrentDirectoryEmpty() {
   try {
@@ -20,9 +19,6 @@ export function isCurrentDirectoryEmpty() {
   }
 }
 
-export const delay = (ms = 2000) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
 export function createFile(filePath: string, content: string) {
   const resolvedPath = path.resolve(filePath);
   const dirName = path.dirname(resolvedPath);
@@ -35,7 +31,6 @@ export function createFile(filePath: string, content: string) {
   }
 
   fs.writeFileSync(resolvedPath, content);
-  // TODO - add flag for verbose
   // consola.success(`File created at ${filePath}`);
 }
 
@@ -52,7 +47,6 @@ export function replaceFile(filePath: string, content: string, log = true) {
 
   fs.writeFileSync(resolvedPath, content);
   if (log === true) {
-    // TODO as above
     // consola.success(`File replaced at ${filePath}`);
   }
 }
@@ -91,7 +85,6 @@ export async function installPackages(
   const installCommand = pmType === "npm" ? "install" : "add";
 
   try {
-    spinner.stop();
     consola.info("Installing Dependencies");
     if (packages.regular) {
       await runCommand(
@@ -165,24 +158,11 @@ export const addPackageToConfig = (packageName: AvailablePackage) => {
 export const wrapInParenthesis = (string: string) => {
   return "(" + string + ")";
 };
-
-// shadcn specific utils
-
 export const pmInstallCommand = {
   pnpm: "pnpm",
   npm: "npx",
   yarn: "npx",
   bun: "bunx",
-};
-
-export const getFileContents = (filePath: string) => {
-  const exists = fs.existsSync(filePath);
-  if (!exists) {
-    consola.error("File does not exist at", filePath);
-    return "";
-  }
-  const fileContents = fs.readFileSync(filePath, "utf-8");
-  return fileContents;
 };
 
 export const updateConfigFileAfterUpdate = () => {
@@ -193,35 +173,6 @@ export const updateConfigFileAfterUpdate = () => {
     consola.info("Config file updated.");
   } else {
     consola.info("Config file already up to date.");
-  }
-};
-
-type TAnalyticsEvent = "init_config" | "add_package" | "generate";
-
-export const sendEvent = async (
-  event: TAnalyticsEvent,
-  data: Record<any, any>
-) => {
-  const config = readConfigFile();
-  if (config.analytics === false) return;
-  const url = "https://backend-forge-proxy-analytics.vercel.app";
-  // const url = "http://localhost:3000";
-  try {
-    await fetch(url + `/api/send-event`, {
-      method: "POST",
-      headers: {
-        "x-request-from": "backend-forge",
-      },
-      body: JSON.stringify({
-        event,
-        config,
-        data,
-      }),
-    });
-  } catch (e) {
-    // do nothing
-    // console.error(e);
-    return;
   }
 };
 
@@ -276,5 +227,36 @@ async function notFoundHandler(_: Request, res: Response) {
 }
 
 export default notFoundHandler;`
+  );
+
+  createFile(
+    "src/middlewares/validator.ts",
+    `import { Request, Response, NextFunction } from "express";
+import { z, ZodError } from "zod";
+import { StatusCodes } from "http-status-codes";
+
+function validator(schema: z.ZodObject<any, any>) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      schema.parse(req.body);
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errorMessages = error.errors.map((issue: any) => ({
+          message: \`\${issue.path.join(".")} is \${issue.message}\`,
+        }));
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ error: "Invalid data", details: errorMessages });
+      } else {
+        res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ error: "Internal Server Error: " + error.message });
+      }
+    }
+  };
+}
+
+export default validator;`
   );
 };
