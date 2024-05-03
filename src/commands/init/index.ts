@@ -107,7 +107,6 @@ export async function initProject(options?: InitOptions) {
     analytics: true,
     auth: preferredAuthPackage,
     driver: undefined,
-    hasSrc: true,
     orm: undefined,
     packages: [],
     preferredPackageManager,

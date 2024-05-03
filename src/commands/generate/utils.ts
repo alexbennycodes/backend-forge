@@ -211,7 +211,7 @@ export function toNormalEnglish(
 }
 
 export function getCurrentSchemas() {
-  const { hasSrc, orm } = readConfigFile();
+  const { orm } = readConfigFile();
   const { shared } = getFilePaths();
   if (orm === "drizzle") {
     const directory = formatFilePath(shared.orm.schemaDir, {

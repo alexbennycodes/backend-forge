@@ -38,7 +38,6 @@ export type Config = {
   analytics: boolean;
   driver: DBType | undefined;
   auth: AuthType;
-  hasSrc: boolean;
   orm: ORMType | undefined;
   packages: AvailablePackage[];
   preferredPackageManager: PMType;
@@ -48,7 +47,6 @@ export type Config = {
 export type UpdateConfig = Partial<Config>;
 
 export type InitOptions = {
-  hasSrcFolder?: boolean;
   packageManager?: PMType;
   orm?: ORMType;
   db?: DBType;

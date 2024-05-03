@@ -25,9 +25,9 @@ export const addPrisma = async (
   dbType: DBType,
   initOptions?: InitOptions
 ) => {
-  const { preferredPackageManager, hasSrc } = readConfigFile();
+  const { preferredPackageManager } = readConfigFile();
   const dbIndex = getDbIndexPath("prisma");
-  const rootPath = hasSrc ? "src/" : "";
+  const rootPath = "src/";
   // ask for db type
 
   // create prisma/schema.prisma (with db type)
@@ -36,7 +36,7 @@ export const addPrisma = async (
     "prisma",
     preferredPackageManager,
     generateDbUrl(dbType),
-    hasSrc ? "src/" : ""
+    rootPath
   );
 
   // create .env with database_url
@@ -55,8 +55,7 @@ export const addPrisma = async (
 
   // create all the files here
 
-  createFolder(`${hasSrc ? "src/" : ""}lib/db/schema`);
-  createFolder(`${hasSrc ? "src/" : ""}lib/api`);
+  createFolder("src/lib/db/schema");
 
   addScriptsToPackageJsonForPrisma(dbType);
 

@@ -5,11 +5,9 @@ import { Schema } from "../types.js";
 import { formatTableName, snakeToKebab, toCamelCase } from "../utils.js";
 
 export const scaffoldAPIRoute = (schema: Schema) => {
-  const { hasSrc, driver } = readConfigFile();
+  const { driver } = readConfigFile();
   const { tableName } = schema;
-  const path = `${hasSrc ? "src/" : ""}routes/${snakeToKebab(
-    tableName
-  )}.route.ts`;
+  const path = `src/routes/${snakeToKebab(tableName)}.route.ts`;
   createFile(path, generateRouteContent(schema, driver));
 };
 

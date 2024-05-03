@@ -305,7 +305,7 @@ async function generateResources(
     tableNameKebabCase,
   } = formatTableName(schema.tableName);
 
-  scaffoldModel(schema, config.driver, config.hasSrc);
+  scaffoldModel(schema, config.driver);
   scaffoldAPIRoute(schema);
   updateEntryFile(tableNameCamelCase, tableNameKebabCase);
 }

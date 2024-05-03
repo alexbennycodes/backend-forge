@@ -1,6 +1,4 @@
 import { DBType } from "../../../../types.js";
-import { readConfigFile } from "../../../../utils.js";
-import { formatFilePath, getDbIndexPath } from "../../../filePaths/index.js";
 import { prismaDbTypeMappings } from "./utils.js";
 
 export const generatePrismaSchema = (dbType: DBType) => {
@@ -25,15 +23,6 @@ datasource db {
   provider = "${prismaDbTypeMappings[dbType]}"
   url      = env("DATABASE_URL")
 }
-
-
-model User {
-  id    Int     @id
-  email String  @unique
-  name  String?
-}
-
-
 `;
 };
 
@@ -53,113 +42,5 @@ export const db =
   });
 
 if (process.env.NODE_ENV !== "production") global.db = db;
-`;
-};
-
-export const generatePrismaComputerModel = () => {
-  const { alias } = readConfigFile();
-  return `import { computerSchema } from "${alias}/zodSchemas";
-import { z } from "zod";
-
-export const insertComputerSchema = computerSchema;
-export const insertComputerParams = computerSchema.omit({
-  id: true,
-});
-
-export const updateComputerSchema = computerSchema.extend({
-  id: z.string().cuid(),
-});
-export const updateComputerParams = updateComputerSchema.extend({
-  brand: z.string().min(2),
-  cores: z.coerce.number().min(2),
-});
-export const computerIdSchema = updateComputerSchema.pick({ id: true });
-
-// Types for computers - used to type API request params and within Components
-export type Computer = z.infer<typeof updateComputerSchema>;
-export type NewComputer = z.infer<typeof computerSchema>;
-export type NewComputerParams = z.infer<typeof insertComputerParams>;
-export type UpdateComputerParams = z.infer<typeof updateComputerParams>;
-export type ComputerId = z.infer<typeof computerIdSchema>["id"];
-`;
-};
-
-export const generatePrismaComputerQueries = () => {
-  const { alias } = readConfigFile();
-  const dbIndex = getDbIndexPath("prisma");
-  return `import { ComputerId, computerIdSchema } from "${alias}/lib/db/schema/computers";
-import { db } from "${formatFilePath(dbIndex, {
-    prefix: "alias",
-    removeExtension: true,
-  })}";
-
-export const getComputers = async () => {
-  const c = await db.computer.findMany();
-  return { computers: c };
-};
-
-export const getComputerById = async (id: ComputerId) => {
-  const { id: computerId } = computerIdSchema.parse({ id });
-  const c = await db.computer.findFirst({ where: { id: computerId } });
-  return { computer: c };
-};`;
-};
-
-export const generatePrismaComputerMutations = () => {
-  const { alias } = readConfigFile();
-  const dbIndex = getDbIndexPath("prisma");
-  return `import { db } from "${formatFilePath(dbIndex, {
-    prefix: "alias",
-    removeExtension: true,
-  })}";
-import {
-  ComputerId,
-  NewComputerParams,
-  UpdateComputerParams,
-  updateComputerSchema,
-  insertComputerSchema,
-  computerIdSchema,
-} from "${alias}/lib/db/schema/computers";
-
-export const createComputer = async (computer: NewComputerParams) => {
-  const newComputer = insertComputerSchema.parse({
-    ...computer,
-  });
-  try {
-    const c = await db.computer.create({ data: newComputer });
-    return { computer: c };
-  } catch (err) {
-    return { error: (err as Error).message ?? "Error, please try again" };
-  }
-};
-
-export const updateComputer = async (
-  id: ComputerId,
-  computer: UpdateComputerParams
-) => {
-  const { id: computerId } = computerIdSchema.parse({ id });
-  const newComputer = updateComputerSchema.parse({
-    ...computer,
-  });
-  try {
-    const c = await db.computer.update({
-      where: { id: computerId },
-      data: newComputer,
-    });
-    return { computer: c };
-  } catch (err) {
-    return { error: (err as Error).message ?? "Error, please try again" };
-  }
-};
-
-export const deleteComputer = async (id: ComputerId) => {
-  const { id: computerId } = computerIdSchema.parse({ id });
-  try {
-    const c = await db.computer.delete({ where: { id: computerId } });
-    return { computer: c };
-  } catch (err) {
-    return { error: (err as Error).message ?? "Error, please try again" };
-  }
-};
 `;
 };

@@ -22,15 +22,13 @@ export const addDrizzle = async (
   includeExampleModel: boolean,
   initOptions?: InitOptions
 ) => {
-  const { preferredPackageManager, hasSrc, rootPath } = readConfigFile();
+  const { preferredPackageManager, rootPath } = readConfigFile();
 
-  let libPath = "";
-  hasSrc ? (libPath = "src/lib") : (libPath = "lib");
+  const libPath = "src/lib";
 
   const databaseUrl = "postgres://postgres:postgres@localhost:5432/{DB_NAME}";
 
-  createFolder(`${hasSrc ? "src/" : ""}lib/db/schema`);
-  createFolder(`${hasSrc ? "src/" : ""}lib/api`);
+  createFolder("src/lib/db/schema");
 
   createIndexTs(dbProvider);
   createMigrateTs(libPath, dbType, dbProvider);
@@ -38,12 +36,7 @@ export const addDrizzle = async (
 
   // perhaps using push rather than migrate for sqlite?
   addScriptsToPackageJson(libPath, dbType, preferredPackageManager);
-  createDotEnv(
-    "drizzle",
-    preferredPackageManager,
-    databaseUrl,
-    hasSrc ? "src/" : ""
-  );
+  createDotEnv("drizzle", preferredPackageManager, databaseUrl, "src/");
   await updateTsConfigTarget();
 
   addNanoidToUtils();

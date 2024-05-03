@@ -12,11 +12,7 @@ import { snakeToKebab, toCamelCase } from "../../utils.js";
 import { generateModelContent } from "./schema/index.js";
 import { generateServicesContent } from "./services/index.js";
 
-export async function scaffoldModel(
-  schema: ExtendedSchema,
-  dbType: DBType,
-  hasSrc: boolean
-) {
+export async function scaffoldModel(schema: ExtendedSchema, dbType: DBType) {
   const { tableName } = schema;
   const { orm, preferredPackageManager, driver } = readConfigFile();
   const { shared, drizzle } = getFilePaths();

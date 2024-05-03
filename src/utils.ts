@@ -146,7 +146,7 @@ export const readConfigFile = (): (Config & { rootPath: string }) | null => {
   // Parse package.json content
   let config: Config = JSON.parse(configJsonData);
 
-  const rootPath = config.hasSrc ? "src/" : "";
+  const rootPath = "src/";
   return { ...config, rootPath };
 };
 
