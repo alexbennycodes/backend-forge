@@ -12,14 +12,16 @@ import {
 } from "../../utils.js";
 import { addPackage } from "../add/index.js";
 import { addToInstallList } from "../add/utils.js";
-import { checkForPackageManager } from "./utils.js";
+import { askForProjectName, checkForPackageManager } from "./utils.js";
 
 export async function initProject(options?: InitOptions) {
-  isCurrentDirectoryEmpty();
+  // isCurrentDirectoryEmpty();
   console.clear();
   console.log("\n");
   console.log(chalk(figlet.textSync("Backend Forge", { font: "ANSI Shadow" })));
   const srcExists = false;
+
+  const projectName = await askForProjectName();
 
   const preferredPackageManager =
     checkForPackageManager() ||
@@ -35,7 +37,7 @@ export async function initProject(options?: InitOptions) {
     })) as PMType);
 
   createPackageJSONFile({
-    name: "backend-forge",
+    name: projectName,
     version: "1.0.0",
     description: "",
     main: "index.js",
@@ -72,15 +74,6 @@ export async function initProject(options?: InitOptions) {
   if (tsConfigString.includes("@/*")) alias = "@";
   if (tsConfigString.includes("~/*")) alias = "~";
 
-  const preferredAuthPackage = (await select({
-    message: "Please pick your preferred package for authentication",
-    choices: [
-      { name: "Passport.js", value: "passport" },
-      //@ts-ignore
-      { name: "Not required", value: false },
-    ],
-  })) as AuthType;
-
   createEntryPoint();
 
   addToInstallList({
@@ -103,9 +96,10 @@ export async function initProject(options?: InitOptions) {
   });
 
   createConfigFile({
+    projectName: projectName,
     alias,
     analytics: true,
-    auth: preferredAuthPackage,
+    auth: undefined,
     driver: undefined,
     orm: undefined,
     packages: [],

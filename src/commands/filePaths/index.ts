@@ -11,14 +11,18 @@ export const paths: { normal: Paths } = {
     },
     shared: {
       orm: {
-        servicesDir: "services",
         schemaDir: "db/schema",
       },
-
+      auth: {
+        authSchema: "db/schema/auth.ts",
+      },
       init: {
         envMjs: "env.mjs",
         libUtils: "utils.ts",
       },
+      controllersDir: "controllers",
+      routesDir: "routes",
+      libDir: "lib",
     },
     prisma: { dbIndex: "db/index.ts" },
   },
@@ -58,8 +62,8 @@ export const formatFilePath = (
 export const generateServiceFileNames = (newModel: string) => {
   const { shared } = getFilePaths();
   const { rootPath } = readConfigFile();
-  const rootDir = rootPath.concat(shared.orm.servicesDir);
-  return `${rootDir}/${newModel}.service.ts`;
+  const rootDir = rootPath.concat(shared.controllersDir);
+  return `${rootDir}/${newModel}.controller.ts`;
 };
 
 export const getDbIndexPath = (ormToBeInstalled?: ORMType) => {

@@ -15,6 +15,7 @@ export const Packages: {
     { name: "Drizzle", value: "drizzle" },
     { name: "Prisma", value: "prisma" },
   ],
+  auth: [{ name: "Passport.js", value: "passport" }],
 };
 
 const installList: { regular: string[]; dev: string[] } = {

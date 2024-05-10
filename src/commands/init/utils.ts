@@ -1,3 +1,5 @@
+import { input } from "@inquirer/prompts";
+import { consola } from "consola";
 import { existsSync, readFileSync } from "fs";
 import {
   AvailablePackage,
@@ -7,22 +9,23 @@ import {
   DBType,
   PMType,
 } from "../../types.js";
-import {
-  installPackages,
-  readConfigFile,
-  replaceFile,
-  updateConfigFile,
-  wrapInParenthesis,
-} from "../../utils.js";
-import { consola } from "consola";
-import { updateTsConfigPrismaTypeAlias } from "../add/orm/utils.js";
-import { addToInstallList } from "../add/utils.js";
-import { addNanoidToUtils } from "../add/orm/drizzle/utils.js";
+import { readConfigFile, replaceFile, updateConfigFile } from "../../utils.js";
 // test
 
 export const DBProviders: DBProviderOptions = {
   pg: [{ name: "Postgres.JS", value: "postgresjs" }],
 };
+
+export async function askForProjectName() {
+  const projectName = await input({
+    message: "Please enter the project name (in snake_case):",
+    validate: (input) =>
+      input.match(/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/)
+        ? true
+        : "Project name must be in snake_case if more than one word.",
+  });
+  return projectName;
+}
 
 export const checkForExistingPackages = async (rootPath: string) => {
   consola.start("Checking project for existing packages...");

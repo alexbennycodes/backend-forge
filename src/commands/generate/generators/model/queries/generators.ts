@@ -28,7 +28,7 @@ const generateDrizzleImports = (schema: Schema, relations: DBField[]) => {
     removeExtension: true,
   })}";
 import { eq${belongsToUser ? ", and" : ""} } from "drizzle-orm";
-import { type ${tableNameSingularCapitalised}Id, ${tableNameSingular}IdSchema, ${tableNameCamelCase} } from "${formatFilePath(
+import { type ${tableNameSingularCapitalised}Id, ${tableNameSingular}IdSchema, ${tableNameCamelCase} insert${tableNameSingularCapitalised}Schema} from "${formatFilePath(
     shared.orm.schemaDir,
     { prefix: "alias", removeExtension: false }
   )}/${tableNameCamelCase}";

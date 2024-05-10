@@ -8,8 +8,9 @@ import { addPrisma } from "./orm/prisma/index.js";
 
 import ora from "ora";
 import { checkForExistingPackages } from "../init/utils.js";
-import { askDbProvider, askDbType, askOrm } from "./prompts.js";
+import { askAuth, askDbProvider, askDbType, askOrm } from "./prompts.js";
 import { installPackagesFromList, printNextSteps } from "./utils.js";
+import { addPassportAuth } from "./auth/passport/index.js";
 
 const promptUser = async (options?: InitOptions): Promise<InitOptions> => {
   const config = readConfigFile();
@@ -41,8 +42,11 @@ const promptUser = async (options?: InitOptions): Promise<InitOptions> => {
     orm === null ||
     (await askDbProvider(options, dbType, config.preferredPackageManager));
 
+  const auth = config.auth || !orm ? undefined : await askAuth(options);
+
   return {
     orm,
+    auth,
     dbProvider: "postgresjs",
     db: dbType,
   };
@@ -66,7 +70,6 @@ export const addPackage = async (
     const start = Date.now();
     spinner.start();
     spinner.text = "Beginning Configuration Process";
-
     // check if orm
     if (config.orm === undefined) {
       if (promptResponse.orm === "drizzle") {
@@ -90,6 +93,15 @@ export const addPackage = async (
       }
       if (promptResponse === null)
         updateConfigFile({ orm: null, driver: null, provider: null });
+    }
+    if (config.auth === undefined) {
+      if (promptResponse.auth === null || promptResponse.auth === undefined) {
+        updateConfigFile({ auth: null });
+      } else {
+        spinner.text = "Configuring Auth with passport";
+        // add auth routes, schema,controller
+        addPassportAuth(options);
+      }
     }
 
     spinner.text = "Finishing configuration";

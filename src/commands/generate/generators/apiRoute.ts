@@ -29,10 +29,10 @@ import {
   update${tableNameSingularCapitalised},
   get${tableNameSingularCapitalised}s,
   get${tableNameSingularCapitalised}ById,
-} from "${formatFilePath(shared.orm.servicesDir, {
+} from "${formatFilePath(shared.controllersDir, {
     prefix: "alias",
     removeExtension: false,
-  })}/${tableNameKebabCase}.service";
+  })}/${tableNameKebabCase}.controller";
 
 import { 
   ${tableNameSingular}IdSchema,
@@ -49,14 +49,14 @@ const ${tableNameCamelCase}Router = express.Router();
 
 ${tableNameCamelCase}Router
   .route("/")
-  .post(validator(Create${tableNameSingularCapitalised}Schema), create${tableNameSingularCapitalised})
+  .post(validator(insert${tableNameSingularCapitalised}Params), create${tableNameSingularCapitalised})
   .get(get${tableNameSingularCapitalised}s);
 
 ${tableNameCamelCase}Router
   .route("/:${tableNameSingular}Id")
-  .get(validator(Read${tableNameSingularCapitalised}Schema), get${tableNameSingularCapitalised}ById)
-  .put(validator(Update${tableNameSingularCapitalised}Schema), update${tableNameSingularCapitalised})
-  .delete(validator(Delete${tableNameSingularCapitalised}Schema), delete${tableNameSingularCapitalised});
+  .get(validator(${tableNameSingularCapitalised}IdSchema), get${tableNameSingularCapitalised}ById)
+  .put(validator(update${tableNameSingularCapitalised}Params), update${tableNameSingularCapitalised})
+  .delete(validator(${tableNameSingularCapitalised}IdSchema), delete${tableNameSingularCapitalised});
 
 export default ${tableNameCamelCase}Router;
 `;

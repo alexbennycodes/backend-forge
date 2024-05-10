@@ -1,5 +1,6 @@
 import { Separator, select } from "@inquirer/prompts";
 import {
+  AuthType,
   DBProvider,
   DBType,
   InitOptions,
@@ -46,5 +47,15 @@ export const askDbProvider = async (
       choices: dbProviders,
       default: "postgresjs",
     })) as DBProvider)
+  );
+};
+
+export const askAuth = async (options: InitOptions) => {
+  return (
+    options.auth ??
+    ((await select({
+      message: "Select an authentication package to use:",
+      choices: [...Packages.auth, new Separator(), nullOption],
+    })) as AuthType | null)
   );
 };

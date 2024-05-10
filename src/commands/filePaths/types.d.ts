@@ -12,9 +12,14 @@ export type Paths = {
       envMjs: string;
       libUtils: string;
     };
+    auth: {
+      authSchema: string;
+    };
     orm: {
-      servicesDir: string;
       schemaDir?: string;
     };
+    controllersDir: string;
+    routesDir: string;
+    libDir: string;
   };
 };

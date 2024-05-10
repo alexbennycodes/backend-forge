@@ -84,9 +84,9 @@ const generateImportStatement = (
       referenceImports.length > 0 ? referenceImports.join("\n") : ""
     }
 import { type get${tableNameCapitalised} } from "${formatFilePath(
-      shared.orm.servicesDir,
+      shared.controllersDir,
       { prefix: "alias", removeExtension: false }
-    )}/${tableNameCamelCase}/queries";
+    )}/${tableNameCamelCase}.controller";
 
 import { nanoid${
       schema.includeTimestamps ? `, timestamps` : ""
@@ -107,9 +107,9 @@ import { z } from "zod";${
         : ""
     }
 import { get${tableNameCapitalised} } from "${formatFilePath(
-      shared.orm.servicesDir,
+      shared.controllersDir,
       { prefix: "alias", removeExtension: false }
-    )}/${tableNameCamelCase}/queries";
+    )}/${tableNameCamelCase}.controller";
 `;
 };
 

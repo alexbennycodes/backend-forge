@@ -28,12 +28,13 @@ export type DBField<T extends ColumnType = ColumnType> = {
   cascade?: boolean;
 };
 
-export type AvailablePackage = "drizzle" | "prisma";
-export type PackageType = "orm";
+export type AvailablePackage = "drizzle" | "prisma" | "passport";
+export type PackageType = "orm" | "auth";
 export type ORMType = "drizzle" | "prisma";
 export type AuthType = "passport" | false;
 
 export type Config = {
+  projectName: string;
   alias: string;
   analytics: boolean;
   driver: DBType | undefined;
@@ -48,6 +49,7 @@ export type UpdateConfig = Partial<Config>;
 
 export type InitOptions = {
   packageManager?: PMType;
+  auth?: AuthType;
   orm?: ORMType;
   db?: DBType;
   dbProvider?: DBProvider;

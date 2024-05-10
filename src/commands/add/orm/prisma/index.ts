@@ -25,7 +25,7 @@ export const addPrisma = async (
   dbType: DBType,
   initOptions?: InitOptions
 ) => {
-  const { preferredPackageManager } = readConfigFile();
+  const { preferredPackageManager, auth } = readConfigFile();
   const dbIndex = getDbIndexPath("prisma");
   const rootPath = "src/";
   // ask for db type
@@ -52,10 +52,6 @@ export const addPrisma = async (
 
   // update tsconfig with import alias for prisma types
   await updateTsConfigPrismaTypeAlias();
-
-  // create all the files here
-
-  createFolder("src/lib/db/schema");
 
   addScriptsToPackageJsonForPrisma(dbType);
 

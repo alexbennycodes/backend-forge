@@ -416,8 +416,6 @@ export const updateEntryFile = (routerName: string, fileName: string) => {
     // Find the position to add the import statement
     const lastImportIndex = data.lastIndexOf("import");
 
-    console.log(lastImportIndex);
-
     // Modify the content to add the import statement
     const newData =
       data.slice(0, lastImportIndex) +
