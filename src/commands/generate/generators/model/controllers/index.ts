@@ -1,9 +1,12 @@
 import { DBType, ORMType } from "../../../../../types.js";
+import { createFile, readConfigFile } from "../../../../../utils.js";
+import { generateControllerFileNames } from "../../../../filePaths/index.js";
 import { ExtendedSchema } from "../../../types.js";
+import { snakeToKebab } from "../../../utils.js";
 import { generateQueries } from "../queries/generators.js";
 import { generateMutations } from "./generators.js";
 
-export const generateServicesContent = (
+export const generateControllerContent = (
   schema: ExtendedSchema,
   driver: DBType,
   orm: ORMType
@@ -33,4 +36,19 @@ ${createMutation}
 ${updateMutation}
 ${deleteMutation}
 `;
+};
+
+export const scaffoldController = (schema: ExtendedSchema) => {
+  const { tableName } = schema;
+
+  const { orm, driver } = readConfigFile();
+
+  const controllerFileName = generateControllerFileNames(
+    snakeToKebab(tableName)
+  );
+
+  createFile(
+    controllerFileName,
+    generateControllerContent(schema, driver, orm)
+  );
 };

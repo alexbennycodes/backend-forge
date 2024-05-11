@@ -259,4 +259,47 @@ function validator(schema: z.ZodObject<any, any>) {
 
 export default validator;`
   );
+
+  createFile(
+    "src/utils/api-error.ts",
+    `class ApiError extends Error {
+    constructor(
+        statusCode,
+        message= "Something went wrong",
+        errors = [],
+        stack = ""
+    ){
+        super(message)
+        this.statusCode = statusCode
+        this.data = null
+        this.message = message
+        this.success = false;
+        this.errors = errors
+
+        if (stack) {
+            this.stack = stack
+        } else{
+            Error.captureStackTrace(this, this.constructor)
+        }
+
+    }
+}
+
+export {ApiError}`
+  );
+
+  createFile(
+    "src/utils/api-response.ts",
+    `
+  class ApiResponse {
+    constructor(statusCode, data, message = "Success"){
+        this.statusCode = statusCode
+        this.data = data
+        this.message = message
+        this.success = statusCode < 400
+    }
+}
+
+export { ApiResponse }`
+  );
 };

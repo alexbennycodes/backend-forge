@@ -24,6 +24,7 @@ import {
   toCamelCase,
   updateEntryFile,
 } from "./utils.js";
+import { scaffoldController } from "./generators/model/controllers/index.js";
 
 type Choice<Value> = {
   name?: string;
@@ -307,6 +308,7 @@ async function generateResources(
 
   scaffoldModel(schema, config.driver);
   scaffoldAPIRoute(schema);
+  scaffoldController(schema);
   updateEntryFile(tableNameCamelCase, tableNameKebabCase);
 }
 

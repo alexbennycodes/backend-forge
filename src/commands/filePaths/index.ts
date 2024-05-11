@@ -59,7 +59,7 @@ export const formatFilePath = (
   return `${opts.prefix === "alias" ? `${alias}/` : rootPath}${formattedFP}`;
 };
 
-export const generateServiceFileNames = (newModel: string) => {
+export const generateControllerFileNames = (newModel: string) => {
   const { shared } = getFilePaths();
   const { rootPath } = readConfigFile();
   const rootDir = rootPath.concat(shared.controllersDir);

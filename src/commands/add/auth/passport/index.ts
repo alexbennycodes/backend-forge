@@ -14,6 +14,7 @@ import {
   createAuthController,
   createAuthRoute,
   createDrizzleAuthSchema,
+  createIsAuthMiddleware,
   createJWTFunctions,
   createPrismaAuthSchema,
 } from "./generators.js";
@@ -44,7 +45,11 @@ export const addPassportAuth = async (options?: InitOptions) => {
   //generate token in middleware
   createFile("src/lib/jwt.ts", createJWTFunctions());
 
-  // create lib/db/schema/auth.ts
+  //generate isAuth middleware for protected routes
+  createFile("src/middlewares/isAuth.ts", createIsAuthMiddleware());
+
+
+  // create db/schema/auth.ts
   if (orm !== null) {
     if (orm === "drizzle") {
       createFile(
